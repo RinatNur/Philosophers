@@ -31,7 +31,7 @@ long int 	get_time(void)
 
 	gettimeofday(&tv, NULL);
 	timestamp = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	printf("timestamp = %ld\n", timestamp);
+//	printf("timestamp = %ld\n", timestamp);
 	return (timestamp);
 }
 
