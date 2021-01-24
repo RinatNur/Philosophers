@@ -27,8 +27,8 @@ typedef struct		s_params{
 
 typedef struct		s_phil{
 	int				index;
-	t_mutex			mutex;
 	pthread_t		thread;
+	t_mutex			mutex;
 	long int 		last_eating;
 	long int 		action_time;
 }					t_phil;
