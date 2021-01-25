@@ -36,91 +36,132 @@ ssize_t		ft_write(int fd, const void *buf)
 }
 
 
-void 	print_action(t_data *data, int phil, char *str, long int action_time)
+void 	print_action(t_phil *all, int phil, char *str, long int action_time)
 {
 	long int 	time;
 
-	pthread_mutex_lock(&data->print);
-	time = action_time - data->start_time;
+	pthread_mutex_lock(&all->data->print);
+	time = action_time - all->data->start_time;
 	ft_putnbr_fd(time, 1);
 	ft_write(1, " ");
-	ft_putnbr_fd((data->left_fork), 1);
+	ft_putnbr_fd((all->left_fork), 1);
 	ft_write(1, str);
-	pthread_mutex_unlock(&data->print);
+	pthread_mutex_unlock(&all->data->print);
 }
 
-void 	loop(t_data *all, int left, int right)
+void 	loop(t_phil *all, int left, int right)
 {
 	if (left % 2 == 0)
 		usleep(100);
-	pthread_mutex_lock(&all->phil[left].mutex);
-	all->phil[left].action_time = get_time();
-	print_action(all, left, FORK, all->phil[left].action_time);
-	pthread_mutex_lock(&all->phil[right].mutex);
-	all->phil[left].action_time = get_time();
-	print_action(all, left, FORK, all->phil[left].action_time);
-	if (all->params.num_of_eating_times > 0)
-		all->params.num_of_eating_times--;
-	all->phil[left].action_time = get_time();
-	print_action(all, left, EAT, all->phil[left].action_time);
-	usleep(all->params.time_to_eat * 1000);
-	pthread_mutex_unlock(&all->phil[left].mutex);
-	pthread_mutex_unlock(&all->phil[right].mutex);
-	all->phil[left].action_time = get_time();
-	print_action(all, left, SLEEP, all->phil[left].action_time);
-	usleep(all->params.time_to_sleep * 1000);
-	all->phil[left].action_time = get_time();
-	print_action(all, left, THINK, all->phil[left].action_time);
+	pthread_mutex_lock(&all->data->fork_mutex[all->left_fork]);
+	all->action_time = get_time();
+	print_action(all, left, FORK, all->action_time);
+	pthread_mutex_lock(&all->data->fork_mutex[all->right_fork]);
+	all->action_time = get_time();
+	print_action(all, left, FORK, all->action_time);
+	all->action_time = get_time();
+	print_action(all, left, EAT, all->action_time);
+	if (all->remain_eating_times > 0)
+		all->remain_eating_times--;
+	all->last_eating = get_time() + 1;//TODO test it (get_time() + 1) ????
+	usleep(all->data->params.time_to_eat * 1000);
+	pthread_mutex_unlock(&all->data->fork_mutex[all->left_fork]);
+	pthread_mutex_unlock(&all->data->fork_mutex[all->right_fork]);
+	all->action_time = get_time();
+	print_action(all, left, SLEEP, all->action_time);
+	usleep(all->data->params.time_to_sleep * 1000);
+	all->action_time = get_time();
+	print_action(all, left, THINK, all->action_time);
 }
 
-void 	*func(void *data)
+void 	*func(void *phil)
 {
-	t_data		*all;
+	t_phil		*all;
 	int 		left;
 	int 		right;
-	int 		num_of_phil;
-	all = (t_data *)data;
+
+	all = (t_phil *)phil;
 	left = all->left_fork;
 	right = all->right_fork;
 
 	while (1)
 	{
 		loop(all, left, right);
-		usleep(50);
+	}
+}
+
+int 	check_life_time(t_phil *phil)
+{
+	long int	time_now;
+
+	time_now = get_time();
+	if (time_now - phil->last_eating > phil->data->params.time_to_die)
+	{
+		print_action(phil, phil->index, DIE, time_now);
+		return (1);
+	}
+	usleep(50);
+	return (0);
+}
+
+int 	check_death_of_phil(t_phil *phil)
+{
+	int i;
+	int flag = 0;
+
+	while (1)
+	{
+		i = 0;
+		flag = 0;
+		while (i < phil->data->params.num_of_ph)
+		{
+			if (check_life_time(&phil[i]))
+				return (1);
+			if (phil[i].remain_eating_times == 0)
+				flag++;
+			i++;
+		}
+		if (flag == phil->data->params.num_of_ph)
+			return (1);
 	}
 }
 
 void 	processing(t_data *data)
 {
+	t_phil		phil[data->params.num_of_ph];
 	int 			i;
+	int 			num_of_ph;
 
 	i = 0;
-	if (!(data->phil = (t_phil *)malloc(sizeof (t_phil) * data->params.num_of_ph)))
+	num_of_ph = data->params.num_of_ph;
+	if (!(data->fork_mutex = (t_mutex *)malloc(sizeof (t_mutex) * data->params.num_of_ph)))
 		print_error("Memory not allocated", 3);
-	while (i < data->params.num_of_ph)
+	while (i < num_of_ph)
 	{
-		data->phil[i].index = i + 1;
-		data->phil[i].last_eating = get_time();
-		pthread_mutex_init(&data->phil[i].mutex , NULL);
-		usleep(50);
+		phil[i].data = data;
+		phil[i].index = i + 1;
+		phil[i].last_eating = get_time();
+		phil[i].remain_eating_times = data->params.num_of_eating_times;
+		pthread_mutex_init(&phil[i].data->fork_mutex[i] , NULL);
 		i++;
 	}
 	pthread_mutex_init(&data->print, NULL);
 	data->start_time = get_time();
 
 	i = 0;
-	while (i < data->params.num_of_ph)
+	while (i < num_of_ph)
 	{
-		data->left_fork = i + 1;
+		phil[i].left_fork = i + 1;
 		if (i == 0)
-			data->right_fork = data->params.num_of_ph;
+			phil[i].right_fork = phil[i].data->params.num_of_ph;
 		else
-			data->right_fork = i;
-		pthread_create(&data->phil[i].thread, NULL, &func, data);
+			phil[i].right_fork = i;
+		pthread_create(&phil[i].thread, NULL, &func, &phil[i]);
 		usleep(50);
 		i++;
 	}
-//	pthread_mutex_destroy(&data->print);
+	if (check_death_of_phil(phil))
+		return ;
 }
 
 int 	main(int argc, char **argv)
@@ -130,7 +171,6 @@ int 	main(int argc, char **argv)
 	if (parser(&data, argc, argv))
 		print_error("Arguments are not valid", 1);
 	processing(&data);
-//	print_string(&data);
 
 	return (0);
 }

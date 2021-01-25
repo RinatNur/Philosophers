@@ -25,23 +25,24 @@ typedef struct		s_params{
 	int 	num_of_eating_times;
 }					t_params;
 
-typedef struct		s_phil{
-	int				index;
-	pthread_t		thread;
-	t_mutex			mutex;
-	long int 		last_eating;
-	long int 		action_time;
-}					t_phil;
-
 typedef struct		s_data{
 	t_params		params;
-	t_phil			*phil;
 	t_mutex			print;
+	t_mutex			*fork_mutex;
+	long int 		start_time;
+}					t_data;
+
+typedef struct		s_phil{
+	t_data			*data;
+	int				index;
+	pthread_t		thread;
+	int 			remain_eating_times;
+	long int 		last_eating;
+	long int 		action_time;
 	int 			left_fork;
 	int 			right_fork;
-	long int 		start_time;
+}					t_phil;
 
-}					t_data;
 
 int				atoi_mini(int *nbr, char *str);
 long int		get_time(void);
@@ -50,5 +51,6 @@ void			print_2d_mas(char **arr);
 void			print_error(char *str, int code);
 void			ft_putnbr_fd(long int n, int fd);
 ssize_t			ft_write(int fd, const void *buf);
+char			*ft_itoa(int n);
 
 #endif //PHILOSOPHERS_H

@@ -65,3 +65,4 @@ void		ft_putnbr_fd(long int n, int fd)
 	sym = n % 10 + '0';
 	write(fd, &sym, 1);
 }
+
