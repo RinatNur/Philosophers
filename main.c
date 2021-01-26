@@ -1,5 +1,11 @@
 #include "philosophers.h"
 
+void	true_sleep(long start, long time_to_sleep)
+{
+	while ((get_time() - start) < time_to_sleep)
+		usleep(100);
+}
+
 int 	parser(t_data *data, int argc, char **argv)
 {
 	if (6 < argc || argc < 5 )
@@ -49,27 +55,42 @@ void 	print_action(t_phil *all, int phil, char *str, long int action_time)
 	pthread_mutex_unlock(&all->data->print);
 }
 
-void 	loop(t_phil *all, int left, int right)
+void 	take_left_fork(t_phil *all, int left)
 {
-	if (left % 2 == 0)
-		usleep(100);
 	pthread_mutex_lock(&all->data->fork_mutex[all->left_fork]);
 	all->action_time = get_time();
-	print_action(all, left, FORK, all->action_time);
+	print_action(all, left, FORK_L, all->action_time);
+}
+
+void 	take_right_fork(t_phil *all, int right)
+{
 	pthread_mutex_lock(&all->data->fork_mutex[all->right_fork]);
 	all->action_time = get_time();
-	print_action(all, left, FORK, all->action_time);
-	all->action_time = get_time();
-	print_action(all, left, EAT, all->action_time);
+	print_action(all, right, FORK_R, all->action_time);
+}
+
+void 	loop(t_phil *all, int left, int right)
+{
+	if (all->index % 2 != 0) {
+		take_left_fork(all, left);
+		take_right_fork(all, right);
+	}
+	else
+	{
+		take_right_fork(all, right);
+		take_left_fork(all, left);
+	}
 	if (all->remain_eating_times > 0)
 		all->remain_eating_times--;
-	all->last_eating = get_time() + 1;//TODO test it (get_time() + 1) ????
-	usleep(all->data->params.time_to_eat * 1000);
+	all->action_time = get_time();
+	print_action(all, left, EAT, all->action_time);
+	all->last_eating = get_time();
+	true_sleep(all->action_time, all->data->params.time_to_eat);
 	pthread_mutex_unlock(&all->data->fork_mutex[all->left_fork]);
 	pthread_mutex_unlock(&all->data->fork_mutex[all->right_fork]);
 	all->action_time = get_time();
 	print_action(all, left, SLEEP, all->action_time);
-	usleep(all->data->params.time_to_sleep * 1000);
+	true_sleep(all->action_time, all->data->params.time_to_sleep);
 	all->action_time = get_time();
 	print_action(all, left, THINK, all->action_time);
 }
@@ -83,7 +104,6 @@ void 	*func(void *phil)
 	all = (t_phil *)phil;
 	left = all->left_fork;
 	right = all->right_fork;
-
 	while (1)
 	{
 		loop(all, left, right);
@@ -93,6 +113,7 @@ void 	*func(void *phil)
 int 	check_life_time(t_phil *phil)
 {
 	long int	time_now;
+	static int i = 0;
 
 	time_now = get_time();
 	if (time_now - phil->last_eating > phil->data->params.time_to_die)
@@ -151,13 +172,13 @@ void 	processing(t_data *data)
 	i = 0;
 	while (i < num_of_ph)
 	{
+
 		phil[i].left_fork = i + 1;
 		if (i == 0)
 			phil[i].right_fork = phil[i].data->params.num_of_ph;
 		else
 			phil[i].right_fork = i;
 		pthread_create(&phil[i].thread, NULL, &func, &phil[i]);
-		usleep(50);
 		i++;
 	}
 	if (check_death_of_phil(phil))

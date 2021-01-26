@@ -4,12 +4,14 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
+# include <string.h> // for memset
 # include <pthread.h>
 # include <sys/time.h> //gettimeofday
 
 # define LEFT(n, num_of_ph) ((n - 1 + num_of_ph) % num_of_ph)
 # define RIGHT(n, num_of_ph) ((n + 1) % num_of_ph)
-# define FORK " has taken a fork\n"
+# define FORK_L " has taken a left fork\n"
+# define FORK_R " has taken a right fork\n"
 # define EAT " is eating\n"
 # define SLEEP " is sleeping\n"
 # define THINK " is thinking\n"
@@ -52,5 +54,6 @@ void			print_error(char *str, int code);
 void			ft_putnbr_fd(long int n, int fd);
 ssize_t			ft_write(int fd, const void *buf);
 char			*ft_itoa(int n);
+void			true_sleep(long start, long time_to_sleep);
 
 #endif //PHILOSOPHERS_H

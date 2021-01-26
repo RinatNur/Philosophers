@@ -59,7 +59,19 @@ int		atoi_mini(int *nbr, char *str)
 void		ft_putnbr_fd(long int n, int fd)
 {
 	char		sym;
+	char 		*str;
+	int 		i;
+	long int 		tmp;
 
+	i = 1;
+	tmp = n;
+	while(tmp > 9)
+	{
+		tmp /= 10;
+		i++;
+	}
+	str = malloc(i + 1);
+	str[i] = '\0';
 	if (n > 9)
 		ft_putnbr_fd(n / 10, fd);
 	sym = n % 10 + '0';
