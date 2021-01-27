@@ -57,14 +57,14 @@ void 	print_action(t_phil *all, int phil, char *str, long int action_time)
 
 void 	take_left_fork(t_phil *all, int left)
 {
-	pthread_mutex_lock(&all->data->fork_mutex[all->left_fork]);
+	pthread_mutex_lock(&all->data->fork_mutex[left]);
 	all->action_time = get_time();
 	print_action(all, left, FORK_L, all->action_time);
 }
 
 void 	take_right_fork(t_phil *all, int right)
 {
-	pthread_mutex_lock(&all->data->fork_mutex[all->right_fork]);
+	pthread_mutex_lock(&all->data->fork_mutex[right]);
 	all->action_time = get_time();
 	print_action(all, right, FORK_R, all->action_time);
 }
@@ -86,8 +86,8 @@ void 	loop(t_phil *all, int left, int right)
 	print_action(all, left, EAT, all->action_time);
 	all->last_eating = get_time();
 	true_sleep(all->action_time, all->data->params.time_to_eat);
-	pthread_mutex_unlock(&all->data->fork_mutex[all->left_fork]);
-	pthread_mutex_unlock(&all->data->fork_mutex[all->right_fork]);
+	pthread_mutex_unlock(&all->data->fork_mutex[left]);
+	pthread_mutex_unlock(&all->data->fork_mutex[right]);
 	all->action_time = get_time();
 	print_action(all, left, SLEEP, all->action_time);
 	true_sleep(all->action_time, all->data->params.time_to_sleep);
@@ -181,8 +181,16 @@ void 	processing(t_data *data)
 		pthread_create(&phil[i].thread, NULL, &func, &phil[i]);
 		i++;
 	}
+	i = 0;
 	if (check_death_of_phil(phil))
-		return ;
+	{
+		while (i < data->params.num_of_ph)
+		{
+			free(data->fork_mutex[i]);
+			i++;
+		}
+		return;
+	}
 }
 
 int 	main(int argc, char **argv)
