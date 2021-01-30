@@ -1,5 +1,7 @@
 #include "philosophers.h"
 
+int 	g_is_dead = 0;
+
 void	true_sleep(long start, long time_to_sleep)
 {
 	while ((get_time() - start) < time_to_sleep)
@@ -10,7 +12,7 @@ int 	parser(t_data *data, int argc, char **argv)
 {
 	if (6 < argc || argc < 5 )
 		return (1);
-	if (atoi_mini(&data->params.num_of_ph, argv[1]) || data->params.num_of_ph > 200)
+	if (atoi_mini(&data->params.num_of_ph, argv[1]) || 200 < data->params.num_of_ph || data->params.num_of_ph < 2)
 		return (1);
 	if (atoi_mini(&data->params.time_to_die, argv[2]))
 		return (1);
@@ -47,26 +49,37 @@ void 	print_action(t_phil *all, int phil, char *str, long int action_time)
 	long int 	time;
 
 	pthread_mutex_lock(&all->data->print);
-	time = action_time - all->data->start_time;
+	time = get_time() - all->data->start_time;
 	ft_putnbr_fd(time, 1);
 	ft_write(1, " ");
 	ft_putnbr_fd((all->left_fork), 1);
 	ft_write(1, str);
+	if (g_is_dead == 1)
+		pthread_mutex_lock(&all->data->print);
 	pthread_mutex_unlock(&all->data->print);
+}
+
+void 	print_action_dead(t_phil *all, char *str)
+{
+	long int 	time;
+
+	time = get_time() - all->data->start_time;
+	ft_putnbr_fd(time, 1);
+	ft_write(1, " ");
+	ft_putnbr_fd((all->left_fork), 1);
+	ft_write(1, str);
 }
 
 void 	take_left_fork(t_phil *all, int left)
 {
 	pthread_mutex_lock(&all->data->fork_mutex[left]);
-	all->action_time = get_time();
-	print_action(all, left, FORK_L, all->action_time);
+	print_action(all, left, FORK_L, get_time());
 }
 
 void 	take_right_fork(t_phil *all, int right)
 {
 	pthread_mutex_lock(&all->data->fork_mutex[right]);
-	all->action_time = get_time();
-	print_action(all, right, FORK_R, all->action_time);
+	print_action(all, right, FORK_R, get_time());
 }
 
 void 	loop(t_phil *all, int left, int right)
@@ -118,10 +131,12 @@ int 	check_life_time(t_phil *phil)
 	time_now = get_time();
 	if (time_now - phil->last_eating > phil->data->params.time_to_die)
 	{
-		print_action(phil, phil->index, DIE, time_now);
+		pthread_mutex_lock(&phil->data->print);
+		g_is_dead = 1;
+		print_action_dead(phil, DIE);
 		return (1);
 	}
-	usleep(50);
+//	usleep(50);
 	return (0);
 }
 
@@ -150,11 +165,13 @@ int 	check_death_of_phil(t_phil *phil)
 void 	processing(t_data *data)
 {
 	t_phil		phil[data->params.num_of_ph];
+//	t_mutex     arr_mutex[data->params.num_of_ph];
 	int 			i;
 	int 			num_of_ph;
 
 	i = 0;
 	num_of_ph = data->params.num_of_ph;
+//	data->fork_mutex = arr_mutex;
 	if (!(data->fork_mutex = (t_mutex *)malloc(sizeof (t_mutex) * data->params.num_of_ph)))
 		print_error("Memory not allocated", 3);
 	while (i < num_of_ph)
@@ -164,6 +181,7 @@ void 	processing(t_data *data)
 		phil[i].last_eating = get_time();
 		phil[i].remain_eating_times = data->params.num_of_eating_times;
 		pthread_mutex_init(&phil[i].data->fork_mutex[i] , NULL);
+//		usleep(50);
 		i++;
 	}
 	pthread_mutex_init(&data->print, NULL);
@@ -179,16 +197,12 @@ void 	processing(t_data *data)
 		else
 			phil[i].right_fork = i;
 		pthread_create(&phil[i].thread, NULL, &func, &phil[i]);
+//		usleep(50);
 		i++;
 	}
 	i = 0;
 	if (check_death_of_phil(phil))
 	{
-		while (i < data->params.num_of_ph)
-		{
-			free(data->fork_mutex[i]);
-			i++;
-		}
 		return;
 	}
 }
@@ -196,10 +210,18 @@ void 	processing(t_data *data)
 int 	main(int argc, char **argv)
 {
 	t_data		data;
+	int 		i = 0;
 
 	if (parser(&data, argc, argv))
 		print_error("Arguments are not valid", 1);
 	processing(&data);
 
+	usleep(1000);
+	while (i < data.params.num_of_ph)
+	{
+		pthread_mutex_destroy(data.fork_mutex);
+		i++;
+	}
+//	pthread_mutex_unlock(&data.print);
 	return (0);
 }
