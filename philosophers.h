@@ -40,6 +40,7 @@ typedef struct		s_phil{
 	pthread_t		thread;
 	int 			remain_eating_times;
 	long int 		last_eating;
+	int 			is_eating;
 	long int 		action_time;
 	int 			left_fork;
 	int 			right_fork;

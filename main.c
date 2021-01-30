@@ -98,7 +98,9 @@ void 	loop(t_phil *all, int left, int right)
 	all->action_time = get_time();
 	print_action(all, left, EAT, all->action_time);
 	all->last_eating = get_time();
+	all->is_eating = 1;
 	true_sleep(all->action_time, all->data->params.time_to_eat);
+	all->is_eating = 0;
 	pthread_mutex_unlock(&all->data->fork_mutex[left]);
 	pthread_mutex_unlock(&all->data->fork_mutex[right]);
 	all->action_time = get_time();
@@ -129,7 +131,7 @@ int 	check_life_time(t_phil *phil)
 	static int i = 0;
 
 	time_now = get_time();
-	if (time_now - phil->last_eating > phil->data->params.time_to_die)
+	if (time_now - phil->last_eating > phil->data->params.time_to_die && phil->is_eating != 1)
 	{
 		pthread_mutex_lock(&phil->data->print);
 		g_is_dead = 1;
