@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jheat <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/31 18:59:34 by jheat             #+#    #+#             */
+/*   Updated: 2021/01/31 18:59:36 by jheat            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
 ssize_t		ft_write(int fd, const void *buf)
@@ -13,7 +25,7 @@ ssize_t		ft_write(int fd, const void *buf)
 
 void		print_action(t_phil *all, char *str)
 {
-	long int 	time;
+	long int		time;
 
 	pthread_mutex_lock(&all->data->print);
 	time = get_time() - all->data->start_time;
@@ -28,7 +40,7 @@ void		print_action(t_phil *all, char *str)
 
 void		print_action_dead(t_phil *all, char *str)
 {
-	long int 	time;
+	long int		time;
 
 	time = get_time() - all->data->start_time;
 	ft_putnbr_fd(time, 1);
@@ -39,8 +51,6 @@ void		print_action_dead(t_phil *all, char *str)
 
 void		print_error(char *str, int code)
 {
-	write (1, str, ft_strlen(str));
-	exit (code);
+	write(1, str, ft_strlen(str));
+	exit(code);
 }
-
-

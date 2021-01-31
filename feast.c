@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   feast.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jheat <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/31 18:58:19 by jheat             #+#    #+#             */
+/*   Updated: 2021/01/31 18:58:22 by jheat            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
-static void		do_when_phil_is_eating(t_phil *all, long start, long time_to_sleep)
+static void		do_when_phil_is_eating(t_phil *all, long start,
+										long time_to_sleep)
 {
 	print_action(all, EAT);
 	all->last_eating = get_time();
@@ -18,13 +31,15 @@ static void		check_sleeping_time(long start, long time_to_sleep)
 
 static void		take_left_fork(t_phil *all, int left)
 {
-	pthread_mutex_lock(&all->data->fork_mutex[left]);
+	(all->data->is_dead == 0)
+		? pthread_mutex_lock(&all->data->fork_mutex[left]) : 0;
 	print_action(all, FORK);
 }
 
 static void		take_right_fork(t_phil *all, int right)
 {
-	pthread_mutex_lock(&all->data->fork_mutex[right]);
+	(all->data->is_dead == 0)
+		? pthread_mutex_lock(&all->data->fork_mutex[right]) : 0;
 	print_action(all, FORK);
 }
 
@@ -45,10 +60,12 @@ void			*feast_func(void *phil)
 			take_right_fork(all, all->right_fork);
 			take_left_fork(all, all->left_fork);
 		}
-		(all->remain_eating_times > 0) ?all->remain_eating_times-- : 0;
+		(all->remain_eating_times > 0) ? all->remain_eating_times-- : 0;
 		do_when_phil_is_eating(all, get_time(), all->data->params.time_to_eat);
-		pthread_mutex_unlock(&all->data->fork_mutex[all->left_fork]);
-		pthread_mutex_unlock(&all->data->fork_mutex[all->right_fork]);
+		(all->data->is_dead == 0)
+			? pthread_mutex_unlock(&all->data->fork_mutex[all->left_fork]) : 0;
+		(all->data->is_dead == 0)
+			? pthread_mutex_unlock(&all->data->fork_mutex[all->right_fork]) : 0;
 		print_action(all, SLEEP);
 		check_sleeping_time(get_time(), all->data->params.time_to_sleep);
 		print_action(all, THINK);

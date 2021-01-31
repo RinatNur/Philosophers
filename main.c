@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jheat <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/31 18:56:55 by jheat             #+#    #+#             */
+/*   Updated: 2021/01/31 18:57:00 by jheat            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
 static int		check_life_time(t_phil *phil)
@@ -42,7 +54,7 @@ static int		check_death_of_phil(t_phil *phil)
 
 static int		parser(t_data *data, int argc, char **argv)
 {
-	if (6 < argc || argc < 5 )
+	if (6 < argc || argc < 5)
 		return (1);
 	if (atoi_mini(&PHILS_N, argv[1]) || 200 < PHILS_N || PHILS_N < 2)
 		return (1);
@@ -70,7 +82,7 @@ static void		processing(t_data *data)
 	int			i;
 
 	i = -1;
-	if (!(data->fork_mutex = (t_mutex *)malloc(sizeof (t_mutex) * PHILS_N)))
+	if (!(data->fork_mutex = (t_mutex *)malloc(sizeof(t_mutex) * PHILS_N)))
 		print_error("Memory not allocated", 3);
 	while (++i < PHILS_N)
 	{
@@ -78,7 +90,7 @@ static void		processing(t_data *data)
 		phil[i].index = i + 1;
 		phil[i].last_eating = get_time();
 		phil[i].remain_eating_times = data->params.num_of_eating_times;
-		pthread_mutex_init(&phil[i].data->fork_mutex[i] , NULL);
+		pthread_mutex_init(&phil[i].data->fork_mutex[i], NULL);
 	}
 	pthread_mutex_init(&data->print, NULL);
 	data->start_time = get_time();
@@ -88,22 +100,23 @@ static void		processing(t_data *data)
 		phil[i].left_fork = i + 1;
 		phil[i].right_fork = (i == 0) ? phil[i].PHILS_N : i;
 		pthread_create(&phil[i].thread, NULL, &feast_func, &phil[i]);
+		usleep(50);
 	}
 	if (check_death_of_phil(phil))
-		return;
+		return ;
 }
 
 int				main(int argc, char **argv)
 {
 	t_data		data;
-	int 		i;
+	int			i;
 
 	i = 0;
 	data.is_dead = 0;
 	if (parser(&data, argc, argv))
 		print_error("Arguments are not valid", 1);
 	processing(&data);
-	usleep(1000);
+	usleep(2000);
 	while (i < data.params.num_of_ph)
 	{
 		pthread_mutex_destroy(data.fork_mutex);

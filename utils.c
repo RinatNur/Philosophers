@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jheat <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/31 19:00:53 by jheat             #+#    #+#             */
+/*   Updated: 2021/01/31 19:01:11 by jheat            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
 long int		get_time(void)
 {
 	struct timeval		tv;
-	long int 			timestamp;
+	long int			timestamp;
 
 	gettimeofday(&tv, NULL);
 	timestamp = tv.tv_sec * 1000 + tv.tv_usec / 1000;
@@ -12,7 +24,7 @@ long int		get_time(void)
 
 size_t			ft_strlen(const char *s)
 {
-	size_t	i;
+	size_t		i;
 
 	i = 0;
 	while (s[i] != '\0')
@@ -32,7 +44,7 @@ int				atoi_mini(int *nbr, char *str)
 	}
 	if (*str != '\0' || *nbr == 0)
 		return (1);
-	return(0);
+	return (0);
 }
 
 void			ft_putnbr_fd(long int n, int fd)

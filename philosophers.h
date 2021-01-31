@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosophers.h                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jheat <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/31 19:02:22 by jheat             #+#    #+#             */
+/*   Updated: 2021/01/31 19:02:25 by jheat            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 
@@ -18,40 +30,40 @@
 typedef pthread_mutex_t	t_mutex;
 
 typedef struct		s_params{
-	int 	num_of_ph;
-	int 	time_to_die;
-	int 	time_to_eat;
-	int 	time_to_sleep;
-	int 	num_of_eating_times;
+	int				num_of_ph;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				num_of_eating_times;
 }					t_params;
 
 typedef struct		s_data{
 	t_params		params;
 	t_mutex			print;
 	t_mutex			*fork_mutex;
-	long int 		start_time;
-	int 			is_dead;
+	long int		start_time;
+	int				is_dead;
 }					t_data;
 
 typedef struct		s_phil{
 	t_data			*data;
 	int				index;
 	pthread_t		thread;
-	int 			remain_eating_times;
-	long int 		last_eating;
-	int 			is_eating;
-	int 			left_fork;
-	int 			right_fork;
+	int				remain_eating_times;
+	long int		last_eating;
+	int				is_eating;
+	int				left_fork;
+	int				right_fork;
 }					t_phil;
 
-void			*feast_func(void *phil);
-int				atoi_mini(int *nbr, char *str);
-long int		get_time(void);
-size_t			ft_strlen(const char *s);
-void			print_error(char *str, int code);
-void			print_action(t_phil *all, char *str);
-void			print_action_dead(t_phil *all, char *str);
-void			ft_putnbr_fd(long int n, int fd);
-ssize_t			ft_write(int fd, const void *buf);
+void				*feast_func(void *phil);
+int					atoi_mini(int *nbr, char *str);
+long int			get_time(void);
+size_t				ft_strlen(const char *s);
+void				print_error(char *str, int code);
+void				print_action(t_phil *all, char *str);
+void				print_action_dead(t_phil *all, char *str);
+void				ft_putnbr_fd(long int n, int fd);
+ssize_t				ft_write(int fd, const void *buf);
 
 #endif
