@@ -4,13 +4,11 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
-# include <string.h> // for memset
+# include <string.h>
 # include <pthread.h>
-# include <sys/time.h> //gettimeofday
+# include <sys/time.h>
 
-# define LEFT(n, num_of_ph) ((n - 1 + num_of_ph) % num_of_ph)
-# define RIGHT(n, num_of_ph) ((n + 1) % num_of_ph)
-//# define FORK " has taken a left fork\n"
+# define PHILS_N data->params.num_of_ph
 # define FORK " has taken a fork\n"
 # define EAT " is eating\n"
 # define SLEEP " is sleeping\n"
@@ -46,7 +44,7 @@ typedef struct		s_phil{
 	int 			right_fork;
 }					t_phil;
 
-
+void			*feast_func(void *phil);
 int				atoi_mini(int *nbr, char *str);
 long int		get_time(void);
 size_t			ft_strlen(const char *s);
@@ -55,6 +53,5 @@ void			print_action(t_phil *all, char *str);
 void			print_action_dead(t_phil *all, char *str);
 void			ft_putnbr_fd(long int n, int fd);
 ssize_t			ft_write(int fd, const void *buf);
-void			true_sleep(long start, long time_to_sleep);
 
-#endif //PHILOSOPHERS_H
+#endif

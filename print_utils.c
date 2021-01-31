@@ -11,7 +11,7 @@ ssize_t		ft_write(int fd, const void *buf)
 	return (ret);
 }
 
-void 	print_action(t_phil *all, char *str)
+void		print_action(t_phil *all, char *str)
 {
 	long int 	time;
 
@@ -26,7 +26,7 @@ void 	print_action(t_phil *all, char *str)
 	pthread_mutex_unlock(&all->data->print);
 }
 
-void 	print_action_dead(t_phil *all, char *str)
+void		print_action_dead(t_phil *all, char *str)
 {
 	long int 	time;
 
@@ -37,7 +37,7 @@ void 	print_action_dead(t_phil *all, char *str)
 	ft_write(1, str);
 }
 
-void 	print_error(char *str, int code)
+void		print_error(char *str, int code)
 {
 	write (1, str, ft_strlen(str));
 	exit (code);

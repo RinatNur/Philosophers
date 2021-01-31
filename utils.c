@@ -1,16 +1,6 @@
 #include "philosophers.h"
 
-size_t		ft_strlen(const char *s)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
-}
-
-long int 	get_time(void)
+long int		get_time(void)
 {
 	struct timeval		tv;
 	long int 			timestamp;
@@ -20,9 +10,17 @@ long int 	get_time(void)
 	return (timestamp);
 }
 
+size_t			ft_strlen(const char *s)
+{
+	size_t	i;
 
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
 
-int		atoi_mini(int *nbr, char *str)
+int				atoi_mini(int *nbr, char *str)
 {
 	if (*str == '\0')
 		return (1);
@@ -37,7 +35,7 @@ int		atoi_mini(int *nbr, char *str)
 	return(0);
 }
 
-void		ft_putnbr_fd(long int n, int fd)
+void			ft_putnbr_fd(long int n, int fd)
 {
 	char		sym;
 
@@ -46,4 +44,3 @@ void		ft_putnbr_fd(long int n, int fd)
 	sym = n % 10 + '0';
 	write(fd, &sym, 1);
 }
-
