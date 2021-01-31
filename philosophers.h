@@ -10,8 +10,8 @@
 
 # define LEFT(n, num_of_ph) ((n - 1 + num_of_ph) % num_of_ph)
 # define RIGHT(n, num_of_ph) ((n + 1) % num_of_ph)
-# define FORK_L " has taken a left fork\n"
-# define FORK_R " has taken a right fork\n"
+//# define FORK " has taken a left fork\n"
+# define FORK " has taken a fork\n"
 # define EAT " is eating\n"
 # define SLEEP " is sleeping\n"
 # define THINK " is thinking\n"
@@ -32,6 +32,7 @@ typedef struct		s_data{
 	t_mutex			print;
 	t_mutex			*fork_mutex;
 	long int 		start_time;
+	int 			is_dead;
 }					t_data;
 
 typedef struct		s_phil{
@@ -41,7 +42,6 @@ typedef struct		s_phil{
 	int 			remain_eating_times;
 	long int 		last_eating;
 	int 			is_eating;
-	long int 		action_time;
 	int 			left_fork;
 	int 			right_fork;
 }					t_phil;
@@ -50,11 +50,11 @@ typedef struct		s_phil{
 int				atoi_mini(int *nbr, char *str);
 long int		get_time(void);
 size_t			ft_strlen(const char *s);
-void			print_2d_mas(char **arr);
 void			print_error(char *str, int code);
+void			print_action(t_phil *all, char *str);
+void			print_action_dead(t_phil *all, char *str);
 void			ft_putnbr_fd(long int n, int fd);
 ssize_t			ft_write(int fd, const void *buf);
-char			*ft_itoa(int n);
 void			true_sleep(long start, long time_to_sleep);
 
 #endif //PHILOSOPHERS_H

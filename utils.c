@@ -10,20 +10,6 @@ size_t		ft_strlen(const char *s)
 	return (i);
 }
 
-void 	print_2d_mas(char **arr)
-{
-	int i;
-
-	i = 0;
-	while (arr[i])
-	{
-		write (1, arr[i], ft_strlen(arr[i]));
-		write (1, "\n", 1);
-		i++;
-	}
-}
-
-
 long int 	get_time(void)
 {
 	struct timeval		tv;
@@ -31,15 +17,10 @@ long int 	get_time(void)
 
 	gettimeofday(&tv, NULL);
 	timestamp = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-//	printf("timestamp = %ld\n", timestamp);
 	return (timestamp);
 }
 
-void 	print_error(char *str, int code)
-{
-	write (1, str, ft_strlen(str));
-	exit (code);
-}
+
 
 int		atoi_mini(int *nbr, char *str)
 {
@@ -49,7 +30,7 @@ int		atoi_mini(int *nbr, char *str)
 	while (*str && '0' <= *str && *str <= '9')
 	{
 		*nbr = *nbr * 10 + *str - '0';
-		*str++;
+		str++;
 	}
 	if (*str != '\0' || *nbr == 0)
 		return (1);

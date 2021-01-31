@@ -1,7 +1,5 @@
 #include "philosophers.h"
 
-int 	g_is_dead = 0;
-
 void	true_sleep(long start, long time_to_sleep)
 {
 	while ((get_time() - start) < time_to_sleep)
@@ -32,54 +30,17 @@ int 	parser(t_data *data, int argc, char **argv)
 	return (0);
 }
 
-ssize_t		ft_write(int fd, const void *buf)
-{
-	int		len;
-	int		ret;
-
-	len = ft_strlen(buf);
-	((ret = write(fd, buf, len)) == -1)
-	? print_error("Error in function write", 3) : 0;
-	return (ret);
-}
-
-
-void 	print_action(t_phil *all, int phil, char *str, long int action_time)
-{
-	long int 	time;
-
-	pthread_mutex_lock(&all->data->print);
-	time = get_time() - all->data->start_time;
-	ft_putnbr_fd(time, 1);
-	ft_write(1, " ");
-	ft_putnbr_fd((all->left_fork), 1);
-	ft_write(1, str);
-	if (g_is_dead == 1)
-		pthread_mutex_lock(&all->data->print);
-	pthread_mutex_unlock(&all->data->print);
-}
-
-void 	print_action_dead(t_phil *all, char *str)
-{
-	long int 	time;
-
-	time = get_time() - all->data->start_time;
-	ft_putnbr_fd(time, 1);
-	ft_write(1, " ");
-	ft_putnbr_fd((all->left_fork), 1);
-	ft_write(1, str);
-}
 
 void 	take_left_fork(t_phil *all, int left)
 {
 	pthread_mutex_lock(&all->data->fork_mutex[left]);
-	print_action(all, left, FORK_L, get_time());
+	print_action(all, FORK);
 }
 
 void 	take_right_fork(t_phil *all, int right)
 {
 	pthread_mutex_lock(&all->data->fork_mutex[right]);
-	print_action(all, right, FORK_R, get_time());
+	print_action(all, FORK);
 }
 
 void 	loop(t_phil *all, int left, int right)
@@ -95,19 +56,16 @@ void 	loop(t_phil *all, int left, int right)
 	}
 	if (all->remain_eating_times > 0)
 		all->remain_eating_times--;
-	all->action_time = get_time();
-	print_action(all, left, EAT, all->action_time);
+	print_action(all, EAT);
 	all->last_eating = get_time();
 	all->is_eating = 1;
-	true_sleep(all->action_time, all->data->params.time_to_eat);
+	true_sleep(get_time(), all->data->params.time_to_eat);
 	all->is_eating = 0;
 	pthread_mutex_unlock(&all->data->fork_mutex[left]);
 	pthread_mutex_unlock(&all->data->fork_mutex[right]);
-	all->action_time = get_time();
-	print_action(all, left, SLEEP, all->action_time);
-	true_sleep(all->action_time, all->data->params.time_to_sleep);
-	all->action_time = get_time();
-	print_action(all, left, THINK, all->action_time);
+	print_action(all, SLEEP);
+	true_sleep(get_time(), all->data->params.time_to_sleep);
+	print_action(all, THINK);
 }
 
 void 	*func(void *phil)
@@ -127,18 +85,17 @@ void 	*func(void *phil)
 
 int 	check_life_time(t_phil *phil)
 {
-	long int	time_now;
+	long		time_now;
 	static int i = 0;
 
-	time_now = get_time();
+	time_now = (long)get_time();
 	if (time_now - phil->last_eating > phil->data->params.time_to_die && phil->is_eating != 1)
 	{
 		pthread_mutex_lock(&phil->data->print);
-		g_is_dead = 1;
+		phil->data->is_dead = 1;
 		print_action_dead(phil, DIE);
 		return (1);
 	}
-//	usleep(50);
 	return (0);
 }
 
@@ -167,13 +124,11 @@ int 	check_death_of_phil(t_phil *phil)
 void 	processing(t_data *data)
 {
 	t_phil		phil[data->params.num_of_ph];
-//	t_mutex     arr_mutex[data->params.num_of_ph];
 	int 			i;
 	int 			num_of_ph;
 
 	i = 0;
 	num_of_ph = data->params.num_of_ph;
-//	data->fork_mutex = arr_mutex;
 	if (!(data->fork_mutex = (t_mutex *)malloc(sizeof (t_mutex) * data->params.num_of_ph)))
 		print_error("Memory not allocated", 3);
 	while (i < num_of_ph)
@@ -183,7 +138,6 @@ void 	processing(t_data *data)
 		phil[i].last_eating = get_time();
 		phil[i].remain_eating_times = data->params.num_of_eating_times;
 		pthread_mutex_init(&phil[i].data->fork_mutex[i] , NULL);
-//		usleep(50);
 		i++;
 	}
 	pthread_mutex_init(&data->print, NULL);
@@ -199,21 +153,19 @@ void 	processing(t_data *data)
 		else
 			phil[i].right_fork = i;
 		pthread_create(&phil[i].thread, NULL, &func, &phil[i]);
-//		usleep(50);
 		i++;
 	}
-	i = 0;
 	if (check_death_of_phil(phil))
-	{
 		return;
-	}
 }
+
 
 int 	main(int argc, char **argv)
 {
 	t_data		data;
 	int 		i = 0;
 
+	data.is_dead = 0;
 	if (parser(&data, argc, argv))
 		print_error("Arguments are not valid", 1);
 	processing(&data);
@@ -224,6 +176,5 @@ int 	main(int argc, char **argv)
 		pthread_mutex_destroy(data.fork_mutex);
 		i++;
 	}
-//	pthread_mutex_unlock(&data.print);
 	return (0);
 }
