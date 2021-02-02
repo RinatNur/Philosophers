@@ -27,22 +27,23 @@ void		print_action(t_phil *all, char *str)
 {
 	long int		time;
 
-	pthread_mutex_lock(&all->data->print);
-	time = get_time() - all->data->start_time;
+	check_life_time(all);
+	pthread_mutex_lock(&g_data.print);
+	time = get_time() - g_data.start_time;
 	ft_putnbr_fd(time, 1);
 	ft_write(1, " ");
 	ft_putnbr_fd((all->left_fork), 1);
 	ft_write(1, str);
-	if (all->data->is_dead == 1)
-		pthread_mutex_lock(&all->data->print);
-	pthread_mutex_unlock(&all->data->print);
+	if (g_data.is_dead == 1)
+		pthread_mutex_lock(&g_data.print);
+	pthread_mutex_unlock(&g_data.print);
 }
 
 void		print_action_dead(t_phil *all, char *str)
 {
 	long int		time;
 
-	time = get_time() - all->data->start_time;
+	time = get_time() - g_data.start_time;
 	ft_putnbr_fd(time, 1);
 	ft_write(1, " ");
 	ft_putnbr_fd((all->left_fork), 1);

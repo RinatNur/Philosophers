@@ -31,15 +31,15 @@ static void		check_sleeping_time(long start, long time_to_sleep)
 
 static void		take_left_fork(t_phil *all, int left)
 {
-	(all->data->is_dead == 0)
-		? pthread_mutex_lock(&all->data->fork_mutex[left]) : 0;
+	(g_data.is_dead == 0)
+	? pthread_mutex_lock(&g_data.fork_mutex[left]) : 0;
 	print_action(all, FORK);
 }
 
 static void		take_right_fork(t_phil *all, int right)
 {
-	(all->data->is_dead == 0)
-		? pthread_mutex_lock(&all->data->fork_mutex[right]) : 0;
+	(g_data.is_dead == 0)
+	? pthread_mutex_lock(&g_data.fork_mutex[right]) : 0;
 	print_action(all, FORK);
 }
 
@@ -50,6 +50,8 @@ void			*feast_func(void *phil)
 	all = (t_phil *)phil;
 	while (1)
 	{
+		if (all->remain_eating_times == 0)
+			return (NULL);
 		if (all->index % 2 != 0)
 		{
 			take_left_fork(all, all->left_fork);
@@ -61,13 +63,11 @@ void			*feast_func(void *phil)
 			take_left_fork(all, all->left_fork);
 		}
 		(all->remain_eating_times > 0) ? all->remain_eating_times-- : 0;
-		do_when_phil_is_eating(all, get_time(), all->data->params.time_to_eat);
-		(all->data->is_dead == 0)
-			? pthread_mutex_unlock(&all->data->fork_mutex[all->left_fork]) : 0;
-		(all->data->is_dead == 0)
-			? pthread_mutex_unlock(&all->data->fork_mutex[all->right_fork]) : 0;
+		do_when_phil_is_eating(all, get_time(), g_data.params.time_to_eat);
+		(g_data.is_dead == 0) ? UNLOCK(&g_data.fork_mutex[all->left_fork]) : 0;
+		(g_data.is_dead == 0) ? UNLOCK(&g_data.fork_mutex[all->right_fork]) : 0;
 		print_action(all, SLEEP);
-		check_sleeping_time(get_time(), all->data->params.time_to_sleep);
+		check_sleeping_time(get_time(), g_data.params.time_to_sleep);
 		print_action(all, THINK);
 	}
 }

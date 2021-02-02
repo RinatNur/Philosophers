@@ -20,42 +20,43 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-# define PHILS_N data->params.num_of_ph
+# define PHILS_N g_data.params.num_of_ph
 # define FORK " has taken a fork\n"
 # define EAT " is eating\n"
 # define SLEEP " is sleeping\n"
 # define THINK " is thinking\n"
 # define DIE " died\n"
+# define UNLOCK pthread_mutex_unlock
 
 typedef pthread_mutex_t	t_mutex;
 
 typedef struct		s_params{
-	int				num_of_ph;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				num_of_eating_times;
+	int					num_of_ph;
+	int					time_to_die;
+	int					time_to_eat;
+	int					time_to_sleep;
+	int					num_of_eating_times;
 }					t_params;
 
 typedef struct		s_data{
-	t_params		params;
-	t_mutex			print;
-	t_mutex			*fork_mutex;
-	long int		start_time;
-	int				is_dead;
+	t_params			params;
+	t_mutex				print;
+	pthread_mutex_t		*fork_mutex;
+	long int			start_time;
+	int					is_dead;
 }					t_data;
 
 typedef struct		s_phil{
-	t_data			*data;
-	int				index;
-	pthread_t		thread;
-	int				remain_eating_times;
-	long int		last_eating;
-	int				is_eating;
-	int				left_fork;
-	int				right_fork;
+	int					index;
+	pthread_t			thread;
+	int					remain_eating_times;
+	long int			last_eating;
+	int					is_eating;
+	int					left_fork;
+	int					right_fork;
 }					t_phil;
 
+t_data				g_data;
 void				*feast_func(void *phil);
 int					atoi_mini(int *nbr, char *str);
 long int			get_time(void);
@@ -65,5 +66,6 @@ void				print_action(t_phil *all, char *str);
 void				print_action_dead(t_phil *all, char *str);
 void				ft_putnbr_fd(long int n, int fd);
 ssize_t				ft_write(int fd, const void *buf);
+void				check_life_time(t_phil *phil);
 
 #endif
