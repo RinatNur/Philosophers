@@ -58,6 +58,8 @@ typedef struct		s_phil{
 }					t_phil;
 
 t_data				g_data;
+sem_t				*g_forks;
+sem_t				*g_print;
 void				*feast_func(void *phil);
 int					atoi_mini(int *nbr, char *str);
 long int			get_time(void);
@@ -68,5 +70,6 @@ void				print_action_dead(t_phil *all, char *str);
 void				ft_putnbr_fd(long int n, int fd);
 ssize_t				ft_write(int fd, const void *buf);
 void				check_life_time(t_phil *phil);
+void	 			unlink_sem();
 
 #endif

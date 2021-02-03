@@ -12,6 +12,14 @@
 
 #include "philosophers.h"
 
+void 			unlink_sem()
+{
+//	sem_unlink();
+//	sem_unlink("g_print");
+//	sem_close(&g_forks);
+//	sem_close(&g_print);
+}
+
 long int		get_time(void)
 {
 	struct timeval		tv;

@@ -28,15 +28,18 @@ void		print_action(t_phil *all, char *str)
 	long int		time;
 
 	check_life_time(all);
-	pthread_mutex_lock(&g_data.print);
+//	pthread_mutex_lock(&g_data.print);
+	sem_wait(g_print);
 	time = get_time() - g_data.start_time;
 	ft_putnbr_fd(time, 1);
 	ft_write(1, " ");
 	ft_putnbr_fd((all->left_fork), 1);
 	ft_write(1, str);
-	if (g_data.is_dead == 1)
-		pthread_mutex_lock(&g_data.print);
-	pthread_mutex_unlock(&g_data.print);
+//	if (g_data.is_dead == 1)
+//		sem_post(g_print);
+//		pthread_mutex_lock(&g_data.print);
+	sem_post(g_print);
+//	pthread_mutex_unlock(&g_data.print);
 }
 
 void		print_action_dead(t_phil *all, char *str)
@@ -53,5 +56,6 @@ void		print_action_dead(t_phil *all, char *str)
 void		print_error(char *str, int code)
 {
 	write(1, str, ft_strlen(str));
+	unlink_sem();
 	exit(code);
 }

@@ -18,11 +18,13 @@ void			check_life_time(t_phil *phil)
 
 	time_now = (long)get_time();
 	if (time_now - phil->last_eating > g_data.params.time_to_die
-			&& phil->is_eating != 1)
+		&& phil->is_eating != 1)
 	{
-		pthread_mutex_lock(&g_data.print);
+		sem_wait(g_print);
+//		pthread_mutex_lock(&g_data.print);
 		g_data.is_dead = 1;
 		print_action_dead(phil, DIE);
+		unlink_sem();
 		exit(0);
 	}
 }
@@ -44,7 +46,10 @@ static int		check_death_of_phil(t_phil *phil)
 			i++;
 		}
 		if (flag == PHILS_N)
+		{
+			unlink_sem();
 			exit(0);
+		}
 		usleep(50);
 	}
 }
@@ -108,6 +113,9 @@ int				main(int argc, char **argv)
 	g_data.fork_mutex = NULL;
 	if (parser(argc, argv))
 		print_error("Arguments are not valid", 1);
+	g_forks = sem_open("g_forks", O_CREAT, 0666, PHILS_N);
+	g_print = sem_open("g_print", O_CREAT, 0666, 1);
 	processing();
+	unlink_sem();
 	return (0);
 }
