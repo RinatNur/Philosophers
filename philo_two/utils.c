@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-void 			unlink_sem()
+void			unlink_sem(void)
 {
 	sem_unlink("g_forks");
 	sem_unlink("g_print");

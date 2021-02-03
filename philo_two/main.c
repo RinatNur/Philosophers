@@ -15,6 +15,7 @@
 void			check_life_time(t_phil *phil)
 {
 	long			time_now;
+
 	time_now = (long)get_time();
 	if (time_now - phil->last_eating > g_data.params.time_to_die
 		&& phil->is_eating != 1)
@@ -49,7 +50,7 @@ static int		check_death_of_phil(t_phil *phil)
 			exit(0);
 		}
 		usleep(50);
-	 }
+	}
 }
 
 static int		parser(int argc, char **argv)

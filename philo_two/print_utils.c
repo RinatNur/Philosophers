@@ -34,8 +34,8 @@ void		print_action(t_phil *all, char *str)
 	ft_write(1, " ");
 	ft_putnbr_fd((all->index), 1);
 	ft_write(1, str);
-//	if (g_data.is_dead == 1)
-//		sem_post(g_print);
+	if (g_data.is_dead == 1)
+		sem_post(g_print);
 	sem_post(g_print);
 }
 

@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philo_one
+NAME = philo_two
 
 LIST  =	main.c feast.c print_utils.c utils.c
 

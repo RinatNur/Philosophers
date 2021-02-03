@@ -13,7 +13,7 @@
 #include "philosophers.h"
 
 static void		do_when_phil_is_eating(t_phil *all, long start,
-										  long time_to_sleep)
+										long time_to_sleep)
 {
 	print_action(all, EAT);
 	all->last_eating = get_time();
@@ -28,7 +28,6 @@ static void		check_sleeping_time(long start, long time_to_sleep)
 	while ((get_time() - start) < time_to_sleep)
 		usleep(100);
 }
-
 
 static void		take_fork(t_phil *all)
 {
