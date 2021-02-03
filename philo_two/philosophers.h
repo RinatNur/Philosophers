@@ -19,6 +19,7 @@
 # include <string.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <semaphore.h>
 
 # define PHILS_N g_data.params.num_of_ph
 # define FORK " has taken a fork\n"
