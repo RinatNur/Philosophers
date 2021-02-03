@@ -27,9 +27,6 @@
 # define SLEEP " is sleeping\n"
 # define THINK " is thinking\n"
 # define DIE " died\n"
-# define UNLOCK pthread_mutex_unlock
-
-typedef pthread_mutex_t	t_mutex;
 
 typedef struct		s_params{
 	int					num_of_ph;
@@ -41,8 +38,6 @@ typedef struct		s_params{
 
 typedef struct		s_data{
 	t_params			params;
-	t_mutex				print;
-	pthread_mutex_t		*fork_mutex;
 	long int			start_time;
 	int					is_dead;
 }					t_data;
@@ -53,8 +48,6 @@ typedef struct		s_phil{
 	int					remain_eating_times;
 	long int			last_eating;
 	int					is_eating;
-	int					left_fork;
-	int					right_fork;
 }					t_phil;
 
 t_data				g_data;

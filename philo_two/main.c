@@ -15,13 +15,11 @@
 void			check_life_time(t_phil *phil)
 {
 	long			time_now;
-
 	time_now = (long)get_time();
 	if (time_now - phil->last_eating > g_data.params.time_to_die
 		&& phil->is_eating != 1)
 	{
 		sem_wait(g_print);
-//		pthread_mutex_lock(&g_data.print);
 		g_data.is_dead = 1;
 		print_action_dead(phil, DIE);
 		unlink_sem();
@@ -51,7 +49,7 @@ static int		check_death_of_phil(t_phil *phil)
 			exit(0);
 		}
 		usleep(50);
-	}
+	 }
 }
 
 static int		parser(int argc, char **argv)
@@ -80,28 +78,19 @@ static int		parser(int argc, char **argv)
 
 static void		processing(void)
 {
-	pthread_mutex_t		fork_mutex[PHILS_N];
 	t_phil				phil[PHILS_N];
 	int					i;
 
 	i = -1;
-	g_data.fork_mutex = fork_mutex;
+	g_data.start_time = get_time();
 	while (++i < PHILS_N)
 	{
 		phil[i].index = i + 1;
 		phil[i].last_eating = get_time();
 		phil[i].remain_eating_times = g_data.params.num_of_eating_times;
-		pthread_mutex_init(&g_data.fork_mutex[i], NULL);
-	}
-	pthread_mutex_init(&g_data.print, NULL);
-	g_data.start_time = get_time();
-	i = -1;
-	while (++i < PHILS_N)
-	{
-		phil[i].left_fork = i + 1;
 		phil[i].is_eating = 0;
-		phil[i].right_fork = (i == 0) ? PHILS_N : i;
 		pthread_create(&phil[i].thread, NULL, &feast_func, &phil[i]);
+		usleep(100);
 	}
 	if (check_death_of_phil(phil))
 		return ;
@@ -109,8 +98,8 @@ static void		processing(void)
 
 int				main(int argc, char **argv)
 {
+	unlink_sem();
 	g_data.is_dead = 0;
-	g_data.fork_mutex = NULL;
 	if (parser(argc, argv))
 		print_error("Arguments are not valid", 1);
 	g_forks = sem_open("g_forks", O_CREAT, 0666, PHILS_N);

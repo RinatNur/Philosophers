@@ -14,10 +14,8 @@
 
 void 			unlink_sem()
 {
-//	sem_unlink();
-//	sem_unlink("g_print");
-//	sem_close(&g_forks);
-//	sem_close(&g_print);
+	sem_unlink("g_forks");
+	sem_unlink("g_print");
 }
 
 long int		get_time(void)
