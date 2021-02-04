@@ -59,6 +59,6 @@ void			ft_putnbr_fd(long int n, int fd)
 
 	if (n > 9)
 		ft_putnbr_fd(n / 10, fd);
-	sym = n % 10 + '0';
+	sym = (char)(n % 10 + '0');
 	write(fd, &sym, 1);
 }
