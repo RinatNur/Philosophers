@@ -28,29 +28,13 @@ void			check_life_time(t_phil *phil)
 	}
 }
 
-static int		check_death_of_phil(t_phil *phil)
+void		*check_death_of_phil(void *array)
 {
 	int i;
-	int flag;
-
+	t_phil		*phil;
+	phil = (t_phil *)array;
 	while (1)
-	{
-		i = 0;
-		flag = 0;
-		while (i < PHILS_N)
-		{
-			check_life_time(&phil[i]);
-			if (phil[i].remain_eating_times == 0)
-				flag++;
-			i++;
-		}
-		if (flag == PHILS_N)
-		{
-			unlink_sem();
-			exit(0);
-		}
-		usleep(50);
-	}
+		check_life_time(phil);
 }
 
 static int		parser(int argc, char **argv)
@@ -81,6 +65,7 @@ static void		processing(void)
 {
 	t_phil				phil[PHILS_N];
 	int					i;
+	pid_t 				pid;
 
 	i = -1;
 	g_data.start_time = get_time();
@@ -90,8 +75,14 @@ static void		processing(void)
 		phil[i].last_eating = get_time();
 		phil[i].remain_eating_times = g_data.params.num_of_eating_times;
 		phil[i].is_eating = 0;
-		pthread_create(&phil[i].thread, NULL, &feast_func, &phil[i]);
-		usleep(100);
+		pid = fork();
+		if (pid == 0)
+		{
+			feast_func(&phil[i]);
+			pthread_create(&phil[i].thread, NULL, &check_death_of_phil, &phil[i]);
+		}
+		else if (pid > 0)
+			usleep(100);
 	}
 	if (check_death_of_phil(phil))
 		return ;

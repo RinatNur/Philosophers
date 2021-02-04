@@ -53,7 +53,7 @@ typedef struct		s_phil{
 t_data				g_data;
 sem_t				*g_forks;
 sem_t				*g_print;
-void				*feast_func(void *phil);
+void				feast_func(t_phil *phil);
 int					atoi_mini(int *nbr, char *str);
 long int			get_time(void);
 size_t				ft_strlen(const char *s);
