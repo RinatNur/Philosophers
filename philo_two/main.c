@@ -10,11 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//FIXME remove exit
-
 #include "philosophers.h"
 
-void			check_life_time(t_phil *phil)
+int			check_life_time(t_phil *phil)
 {
 	long			time_now;
 
@@ -26,8 +24,9 @@ void			check_life_time(t_phil *phil)
 		g_data.is_dead = 1;
 		print_action_dead(phil, DIE);
 		unlink_sem();
-		exit(0);
+		return (1);
 	}
+	return (0);
 }
 
 static int		check_death_of_phil(t_phil *phil)
@@ -41,7 +40,8 @@ static int		check_death_of_phil(t_phil *phil)
 		flag = 0;
 		while (i < PHILS_N)
 		{
-			check_life_time(&phil[i]);
+			if (check_life_time(&phil[i]) == 1)
+				return (0);
 			if (phil[i].remain_eating_times == 0)
 				flag++;
 			i++;
@@ -49,7 +49,7 @@ static int		check_death_of_phil(t_phil *phil)
 		if (flag == PHILS_N)
 		{
 			unlink_sem();
-			exit(0);
+			return (0);
 		}
 		usleep(50);
 	}
@@ -104,7 +104,11 @@ int				main(int argc, char **argv)
 	unlink_sem();
 	g_data.is_dead = 0;
 	if (parser(argc, argv))
-		print_error("Arguments are not valid", 1);
+	{
+		ft_write(2, "Arguments are not valid");
+		unlink_sem();
+		return (1);
+	}
 	g_forks = sem_open("g_forks", O_CREAT, 0666, PHILS_N);
 	g_print = sem_open("g_print", O_CREAT, 0666, 1);
 	processing();

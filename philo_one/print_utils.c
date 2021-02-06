@@ -18,8 +18,7 @@ ssize_t		ft_write(int fd, const void *buf)
 	int		ret;
 
 	len = ft_strlen(buf);
-	((ret = write(fd, buf, len)) == -1)
-	? print_error("Error in function write", 3) : 0;
+	ret = write(fd, buf, len)
 	return (ret);
 }
 
