@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-void				*check_death_of_phil(void *array)
+void			*check_death_of_phil(void *array)
 {
 	t_phil		*phil;
 	int			i;
@@ -64,9 +64,9 @@ static int		parser(int argc, char **argv)
 
 static void		processing(void)
 {
-	t_phil				phil[PHILS_N];
-	int					i;
-	int 				status;
+	t_phil		phil[PHILS_N];
+	int			i;
+	int			status;
 
 	i = 0;
 	g_data.start_time = get_time();

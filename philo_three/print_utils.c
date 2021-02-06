@@ -27,7 +27,6 @@ void		print_action(t_phil *all, char *str)
 {
 	long int		time;
 
-//	check_life_time(all);
 	sem_wait(g_print);
 	time = get_time() - g_data.start_time;
 	ft_putnbr_fd(time, 1);

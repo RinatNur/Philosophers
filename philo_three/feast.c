@@ -35,13 +35,13 @@ static void		take_fork(t_phil *phil)
 	print_action(phil, FORK);
 }
 
-int			feast_func(t_phil *phil)
+int				feast_func(t_phil *phil)
 {
 	pthread_create(&phil->thread, NULL, &check_death_of_phil, phil);
 	while (1)
 	{
 		if (phil->remain_eating_times == 0 || g_data.is_dead == 1)
-			exit (2);
+			exit(2);
 		take_fork(phil);
 		take_fork(phil);
 		phil->remain_eating_times--;
