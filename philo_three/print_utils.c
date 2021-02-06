@@ -50,7 +50,7 @@ void		print_action_dead(t_phil *all, char *str)
 
 void		print_error(char *str, int code)
 {
-	write(1, str, ft_strlen(str));
+	ft_write(2, str);
 	unlink_sem();
 	exit(code);
 }

@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-int			check_life_time(t_phil *phil)
+int				check_life_time(t_phil *phil)
 {
 	long			time_now;
 
@@ -105,7 +105,7 @@ int				main(int argc, char **argv)
 	g_data.is_dead = 0;
 	if (parser(argc, argv))
 	{
-		ft_write(2, "Arguments are not valid");
+		ft_write(2, "Arguments are not valid\n");
 		unlink_sem();
 		return (1);
 	}

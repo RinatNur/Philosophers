@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-int			check_life_time(t_phil *phil)
+static int		check_life_time(t_phil *phil)
 {
 	long			time_now;
 
@@ -25,6 +25,7 @@ int			check_life_time(t_phil *phil)
 		print_action_dead(phil, DIE);
 		return (1);
 	}
+	return (0);
 }
 
 static int		check_death_of_phil(t_phil *phil)

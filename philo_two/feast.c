@@ -39,7 +39,6 @@ void			*feast_func(void *phil)
 {
 	t_phil		*all;
 
-
 	all = (t_phil *)phil;
 	while (1)
 	{

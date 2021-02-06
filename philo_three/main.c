@@ -30,7 +30,7 @@ void			*check_death_of_phil(void *array)
 				g_data.is_dead = 1;
 				print_action_dead(phil, DIE);
 				unlink_sem();
-				exit(100);
+				exit(0);
 			}
 			i++;
 		}

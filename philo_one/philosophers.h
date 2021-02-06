@@ -66,6 +66,5 @@ void				print_action(t_phil *all, char *str);
 void				print_action_dead(t_phil *all, char *str);
 void				ft_putnbr_fd(long int n, int fd);
 ssize_t				ft_write(int fd, const void *buf);
-void				check_life_time(t_phil *phil);
 
 #endif

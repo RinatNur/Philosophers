@@ -18,7 +18,7 @@ ssize_t		ft_write(int fd, const void *buf)
 	int		ret;
 
 	len = ft_strlen(buf);
-	ret = write(fd, buf, len)
+	ret = write(fd, buf, len);
 	return (ret);
 }
 
