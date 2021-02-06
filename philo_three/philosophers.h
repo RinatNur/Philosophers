@@ -20,6 +20,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <semaphore.h>
+# include <signal.h>
 
 # define PHILS_N g_data.params.num_of_ph
 # define FORK " has taken a fork\n"
@@ -44,16 +45,18 @@ typedef struct		s_data{
 
 typedef struct		s_phil{
 	int					index;
+	pid_t				pid;
 	pthread_t			thread;
 	int					remain_eating_times;
 	long int			last_eating;
 	int					is_eating;
+	int 				is_ended_eating;
 }					t_phil;
 
 t_data				g_data;
 sem_t				*g_forks;
 sem_t				*g_print;
-void				feast_func(t_phil *phil);
+int					feast_func(t_phil *phil);
 int					atoi_mini(int *nbr, char *str);
 long int			get_time(void);
 size_t				ft_strlen(const char *s);
@@ -63,6 +66,7 @@ void				print_action_dead(t_phil *all, char *str);
 void				ft_putnbr_fd(long int n, int fd);
 ssize_t				ft_write(int fd, const void *buf);
 void				check_life_time(t_phil *phil);
+void				*check_death_of_phil(void *array);
 void				unlink_sem();
 
 #endif

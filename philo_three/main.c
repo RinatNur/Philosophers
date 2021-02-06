@@ -28,13 +28,24 @@ void			check_life_time(t_phil *phil)
 	}
 }
 
-void		*check_death_of_phil(void *array)
+void				*check_death_of_phil(void *array)
 {
 	int i;
-	t_phil		*phil;
+	t_phil *phil;
+
 	phil = (t_phil *)array;
 	while (1)
-		check_life_time(phil);
+	{
+		i = 0;
+		while (i < PHILS_N)
+		{
+			check_life_time(phil);
+			if (phil[i].remain_eating_times == 0)
+				exit (3);
+			i++;
+		}
+		usleep(50);
+	}
 }
 
 static int		parser(int argc, char **argv)
@@ -65,7 +76,7 @@ static void		processing(void)
 {
 	t_phil				phil[PHILS_N];
 	int					i;
-	pid_t 				pid;
+	int 				status;
 
 	i = -1;
 	g_data.start_time = get_time();
@@ -73,19 +84,22 @@ static void		processing(void)
 	{
 		phil[i].index = i + 1;
 		phil[i].last_eating = get_time();
+		phil[i].is_ended_eating = 0;
 		phil[i].remain_eating_times = g_data.params.num_of_eating_times;
 		phil[i].is_eating = 0;
-		pid = fork();
-		if (pid == 0)
+		phil[i].pid = fork();
+		if (phil[i].pid == 0)
 		{
 			feast_func(&phil[i]);
-			pthread_create(&phil[i].thread, NULL, &check_death_of_phil, &phil[i]);
 		}
-		else if (pid > 0)
-			usleep(100);
+		else if (phil[i].pid < 0)
+			return ;
 	}
-	if (check_death_of_phil(phil))
-		return ;
+	waitpid(-1, &status, WUNTRACED);
+	phil[i].is_ended_eating = (status == 2) ? 1 : 0;
+	usleep(100);
+//	if (check_death_of_phil(phil))
+//		return ;
 }
 
 int				main(int argc, char **argv)

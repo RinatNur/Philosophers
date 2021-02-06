@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+//FIXME remove exit
+
 #include "philosophers.h"
 
 void			check_life_time(t_phil *phil)
