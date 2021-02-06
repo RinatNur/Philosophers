@@ -12,26 +12,10 @@
 
 #include "philosophers.h"
 
-void			check_life_time(t_phil *phil)
-{
-	long			time_now;
-
-	time_now = (long)get_time();
-	if (time_now - phil->last_eating > g_data.params.time_to_die
-		&& phil->is_eating != 1)
-	{
-		sem_wait(g_print);
-		g_data.is_dead = 1;
-		print_action_dead(phil, DIE);
-		unlink_sem();
-		exit(0);
-	}
-}
-
 void				*check_death_of_phil(void *array)
 {
-	int i;
-	t_phil *phil;
+	t_phil		*phil;
+	int			i;
 
 	phil = (t_phil *)array;
 	while (1)
@@ -39,9 +23,15 @@ void				*check_death_of_phil(void *array)
 		i = 0;
 		while (i < PHILS_N)
 		{
-			check_life_time(phil);
-			if (phil[i].remain_eating_times == 0)
-				exit (3);
+			if (get_time() - phil->last_eating > g_data.params.time_to_die
+				&& phil->is_eating != 1)
+			{
+				sem_wait(g_print);
+				g_data.is_dead = 1;
+				print_action_dead(phil, DIE);
+				unlink_sem();
+				exit(100);
+			}
 			i++;
 		}
 		usleep(50);
@@ -78,13 +68,12 @@ static void		processing(void)
 	int					i;
 	int 				status;
 
-	i = -1;
+	i = 0;
 	g_data.start_time = get_time();
-	while (++i < PHILS_N)
+	while (i < PHILS_N)
 	{
 		phil[i].index = i + 1;
 		phil[i].last_eating = get_time();
-		phil[i].is_ended_eating = 0;
 		phil[i].remain_eating_times = g_data.params.num_of_eating_times;
 		phil[i].is_eating = 0;
 		phil[i].pid = fork();
@@ -94,12 +83,9 @@ static void		processing(void)
 		}
 		else if (phil[i].pid < 0)
 			return ;
+		i++;
 	}
 	waitpid(-1, &status, WUNTRACED);
-	phil[i].is_ended_eating = (status == 2) ? 1 : 0;
-	usleep(100);
-//	if (check_death_of_phil(phil))
-//		return ;
 }
 
 int				main(int argc, char **argv)
@@ -112,5 +98,5 @@ int				main(int argc, char **argv)
 	g_print = sem_open("g_print", O_CREAT, 0666, 1);
 	processing();
 	unlink_sem();
-	return (0);
+	return (50);
 }

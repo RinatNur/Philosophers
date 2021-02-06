@@ -29,31 +29,27 @@ static void		check_sleeping_time(long start, long time_to_sleep)
 		usleep(100);
 }
 
-static void		take_fork(t_phil *all)
+static void		take_fork(t_phil *phil)
 {
 	sem_wait(g_forks);
-	print_action(all, FORK);
+	print_action(phil, FORK);
 }
 
 int			feast_func(t_phil *phil)
 {
-	t_phil		*all;
-
-
-	all = (t_phil *)phil;
-	pthread_create(&phil->thread, NULL, &check_death_of_phil, &phil);
+	pthread_create(&phil->thread, NULL, &check_death_of_phil, phil);
 	while (1)
 	{
-		if (all->remain_eating_times == 0 || g_data.is_dead == 1)
+		if (phil->remain_eating_times == 0 || g_data.is_dead == 1)
 			exit (2);
-		take_fork(all);
-		take_fork(all);
-		all->remain_eating_times--;
-		do_when_phil_is_eating(all, get_time(), g_data.params.time_to_eat);
+		take_fork(phil);
+		take_fork(phil);
+		phil->remain_eating_times--;
+		do_when_phil_is_eating(phil, get_time(), g_data.params.time_to_eat);
 		sem_post(g_forks);
 		sem_post(g_forks);
-		print_action(all, SLEEP);
+		print_action(phil, SLEEP);
 		check_sleeping_time(get_time(), g_data.params.time_to_sleep);
-		print_action(all, THINK);
+		print_action(phil, THINK);
 	}
 }

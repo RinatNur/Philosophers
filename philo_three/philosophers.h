@@ -50,7 +50,6 @@ typedef struct		s_phil{
 	int					remain_eating_times;
 	long int			last_eating;
 	int					is_eating;
-	int 				is_ended_eating;
 }					t_phil;
 
 t_data				g_data;
@@ -65,7 +64,6 @@ void				print_action(t_phil *all, char *str);
 void				print_action_dead(t_phil *all, char *str);
 void				ft_putnbr_fd(long int n, int fd);
 ssize_t				ft_write(int fd, const void *buf);
-void				check_life_time(t_phil *phil);
 void				*check_death_of_phil(void *array);
 void				unlink_sem();
 
