@@ -49,9 +49,3 @@ void		print_action_dead(t_phil *all, char *str)
 	ft_putnbr_fd((all->left_fork), 1);
 	ft_write(1, str);
 }
-
-void		print_error(char *str, int code)
-{
-	write(1, str, ft_strlen(str));
-	exit(code);
-}

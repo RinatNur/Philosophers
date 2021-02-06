@@ -10,11 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//FIXME remove exit
-
 #include "philosophers.h"
 
-void			check_life_time(t_phil *phil)
+int			check_life_time(t_phil *phil)
 {
 	long			time_now;
 
@@ -25,7 +23,7 @@ void			check_life_time(t_phil *phil)
 		pthread_mutex_lock(&g_data.print);
 		g_data.is_dead = 1;
 		print_action_dead(phil, DIE);
-		exit(0);
+		return (1);
 	}
 }
 
@@ -40,13 +38,14 @@ static int		check_death_of_phil(t_phil *phil)
 		flag = 0;
 		while (i < PHILS_N)
 		{
-			check_life_time(&phil[i]);
+			if (check_life_time(&phil[i]) == 1)
+				return (0);
 			if (phil[i].remain_eating_times == 0)
 				flag++;
 			i++;
 		}
 		if (flag == PHILS_N)
-			exit(0);
+			return (0);
 		usleep(50);
 	}
 }
@@ -109,7 +108,10 @@ int				main(int argc, char **argv)
 	g_data.is_dead = 0;
 	g_data.fork_mutex = NULL;
 	if (parser(argc, argv))
-		print_error("Arguments are not valid", 1);
+	{
+		ft_write(2, "Arguments are not valid");
+		return (1);
+	}
 	processing();
 	return (0);
 }
