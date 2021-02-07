@@ -30,7 +30,7 @@ void			*check_death_of_phil(void *array)
 				g_data.is_dead = 1;
 				print_action_dead(phil, DIE);
 				unlink_sem();
-				exit(0);
+				exit(3);
 			}
 			i++;
 		}
@@ -62,11 +62,35 @@ static int		parser(int argc, char **argv)
 	return (0);
 }
 
+void			check_exit_status(t_phil *phil)
+{
+	int			status;
+	int			i;
+
+	status = 0;
+	while (1)
+	{
+		waitpid(-1, &status, 0);
+		status = WEXITSTATUS(status);
+		if (status == 3)
+		{
+			i = 0;
+			while (i < PHILS_N)
+				kill(phil[i++].pid, SIGKILL);
+			return ;
+		}
+		else if (status == 2)
+			break ;
+	}
+	i = 0;
+	while (i < PHILS_N)
+		kill(phil[i++].pid, SIGKILL);
+}
+
 static void		processing(void)
 {
 	t_phil		phil[PHILS_N];
 	int			i;
-	int			status;
 
 	i = 0;
 	g_data.start_time = get_time();
@@ -78,14 +102,13 @@ static void		processing(void)
 		phil[i].is_eating = 0;
 		phil[i].pid = fork();
 		if (phil[i].pid == 0)
-		{
 			feast_func(&phil[i]);
-		}
 		else if (phil[i].pid < 0)
 			return ;
+		usleep(100);
 		i++;
 	}
-	waitpid(-1, &status, WUNTRACED);
+	check_exit_status(phil);
 }
 
 int				main(int argc, char **argv)
@@ -98,5 +121,5 @@ int				main(int argc, char **argv)
 	g_print = sem_open("g_print", O_CREAT, 0666, 1);
 	processing();
 	unlink_sem();
-	return (50);
+	return (0);
 }
