@@ -43,6 +43,8 @@ static int		check_death_of_phil(t_phil *phil)
 		flag = 0;
 		while (i < PHILS_N)
 		{
+			if (check_life_time(&phil[i]) == 1)
+				return (0);
 			if (phil[i].remain_eating_times == 0)
 				flag++;
 			i++;

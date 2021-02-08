@@ -40,7 +40,6 @@ static int		choose_fork(t_phil *all, int fork_type)
 	return (0);
 }
 
-
 static int		take_forks(t_phil *all)
 {
 	if (all->index % 2 == 0)
@@ -61,7 +60,6 @@ static int		take_forks(t_phil *all)
 	return (0);
 }
 
-
 void			*feast_func(void *phil)
 {
 	t_phil		*all;
@@ -74,7 +72,8 @@ void			*feast_func(void *phil)
 		if (take_forks(all) == 1)
 			return (NULL);
 		(all->remain_eating_times > 0) ? all->remain_eating_times-- : 0;
-		if (do_when_phil_is_eating(all, get_time(), g_data.params.time_to_eat) == 1)
+		if (do_when_phil_is_eating(all, get_time(),
+			g_data.params.time_to_eat) == 1)
 			return (NULL);
 		(g_data.is_dead == 0) ? UNLOCK(&g_data.fork_mutex[all->left_fork]) : 0;
 		(g_data.is_dead == 0) ? UNLOCK(&g_data.fork_mutex[all->right_fork]) : 0;

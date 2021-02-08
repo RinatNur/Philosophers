@@ -22,7 +22,7 @@ ssize_t		ft_write(int fd, const void *buf)
 	return (ret);
 }
 
-int		print_action(t_phil *all, char *str)
+int			print_action(t_phil *all, char *str)
 {
 	long int		time;
 

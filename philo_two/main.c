@@ -35,6 +35,7 @@ static int		check_death_of_phil(t_phil *phil)
 {
 	int i;
 	int flag;
+
 	while (1)
 	{
 		if (g_data.is_dead == 1)
@@ -43,8 +44,8 @@ static int		check_death_of_phil(t_phil *phil)
 		flag = 0;
 		while (i < PHILS_N)
 		{
-//			if (check_life_time(&phil[i]) == 1)
-//				return (0);
+			if (check_life_time(&phil[i]) == 1)
+				return (0);
 			if (phil[i].remain_eating_times == 0)
 				flag++;
 			i++;
@@ -94,7 +95,7 @@ static void		processing(void)
 		phil[i].index = i + 1;
 		phil[i].last_eating = get_time();
 		phil[i].remain_eating_times = g_data.params.num_of_eating_times;
-		phil[i].is_eating = 0;
+		phil[i].is_eating = 555;
 		pthread_create(&phil[i].thread, NULL, &feast_func, &phil[i]);
 		usleep(100);
 	}

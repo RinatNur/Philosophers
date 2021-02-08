@@ -54,7 +54,8 @@ void			*feast_func(void *phil)
 		if (take_forks(all) == 1)
 			return (NULL);
 		all->remain_eating_times--;
-		if (do_when_phil_is_eating(all, get_time(), g_data.params.time_to_eat) == 1)
+		if (do_when_phil_is_eating(all, get_time(),
+			g_data.params.time_to_eat) == 1)
 			return (NULL);
 		sem_post(g_forks);
 		sem_post(g_forks);
