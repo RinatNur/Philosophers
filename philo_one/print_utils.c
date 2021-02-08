@@ -22,11 +22,12 @@ ssize_t		ft_write(int fd, const void *buf)
 	return (ret);
 }
 
-void		print_action(t_phil *all, char *str)
+int		print_action(t_phil *all, char *str)
 {
 	long int		time;
 
-	check_life_time(all);
+	if (check_life_time(all) == 1)
+		return (1);
 	pthread_mutex_lock(&g_data.print);
 	time = get_time() - g_data.start_time;
 	ft_putnbr_fd(time, 1);
@@ -36,6 +37,7 @@ void		print_action(t_phil *all, char *str)
 	if (g_data.is_dead == 1)
 		pthread_mutex_lock(&g_data.print);
 	pthread_mutex_unlock(&g_data.print);
+	return (0);
 }
 
 void		print_action_dead(t_phil *all, char *str)

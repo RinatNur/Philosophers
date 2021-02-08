@@ -12,11 +12,13 @@
 
 #include "philosophers.h"
 
-static int		check_life_time(t_phil *phil)
+int				check_life_time(t_phil *phil)
 {
 	long			time_now;
 
 	time_now = (long)get_time();
+	if (g_data.is_dead == 1)
+		return (1);
 	if (time_now - phil->last_eating > g_data.params.time_to_die
 			&& phil->is_eating != 1)
 	{
@@ -35,12 +37,14 @@ static int		check_death_of_phil(t_phil *phil)
 
 	while (1)
 	{
+		if (g_data.is_dead == 1)
+			return (0);
 		i = 0;
 		flag = 0;
 		while (i < PHILS_N)
 		{
-			if (check_life_time(&phil[i]) == 1)
-				return (0);
+//			if (check_life_time(&phil[i]) == 1)
+//				return (0);
 			if (phil[i].remain_eating_times == 0)
 				flag++;
 			i++;
@@ -100,7 +104,7 @@ static void		processing(void)
 		phil[i].right_fork = (i == 0) ? PHILS_N : i;
 		pthread_create(&phil[i].thread, NULL, &feast_func, &phil[i]);
 	}
-	if (check_death_of_phil(phil))
+	if (check_death_of_phil(phil) == 0)
 		return ;
 }
 
