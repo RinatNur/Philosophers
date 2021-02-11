@@ -51,10 +51,7 @@ static int		check_death_of_phil(t_phil *phil)
 			i++;
 		}
 		if (flag == PHILS_N)
-		{
-			unlink_sem();
 			return (0);
-		}
 		usleep(50);
 	}
 }
