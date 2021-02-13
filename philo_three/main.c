@@ -15,24 +15,18 @@
 void			*check_death_of_phil(void *array)
 {
 	t_phil		*phil;
-	int			i;
 
 	phil = (t_phil *)array;
 	while (1)
 	{
-		i = 0;
-		while (i < PHILS_N)
+		if (get_time() - phil->last_eating > g_data.params.time_to_die
+		&& phil->is_eating != 1)
 		{
-			if (get_time() - phil->last_eating > g_data.params.time_to_die
-				&& phil->is_eating != 1)
-			{
-				sem_wait(g_print);
-				g_data.is_dead = 1;
-				print_action_dead(phil, DIE);
-				unlink_sem();
-				exit(3);
-			}
-			i++;
+			sem_wait(g_print);
+			g_data.is_dead = 1;
+			print_action_dead(phil, DIE);
+			unlink_sem();
+			exit(3);
 		}
 		usleep(50);
 	}

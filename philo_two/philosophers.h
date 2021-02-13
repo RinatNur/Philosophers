@@ -57,12 +57,10 @@ void				*feast_func(void *phil);
 int					atoi_mini(int *nbr, char *str);
 long int			get_time(void);
 size_t				ft_strlen(const char *s);
-void				print_error(char *str, int code);
 int					print_action(t_phil *all, char *str);
 void				print_action_dead(t_phil *all, char *str);
 void				ft_putnbr_fd(long int n, int fd);
 ssize_t				ft_write(int fd, const void *buf);
-int					check_life_time(t_phil *phil);
 void				unlink_sem();
 
 #endif

@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-int				check_life_time(t_phil *phil)
+static int				check_life_time(t_phil *phil)
 {
 	long			time_now;
 
@@ -25,7 +25,6 @@ int				check_life_time(t_phil *phil)
 		sem_wait(g_print);
 		g_data.is_dead = 1;
 		print_action_dead(phil, DIE);
-		unlink_sem();
 		return (1);
 	}
 	return (0);
@@ -50,8 +49,10 @@ static int		check_death_of_phil(t_phil *phil)
 				flag++;
 			i++;
 		}
-		if (flag == PHILS_N)
+		if (flag == PHILS_N) {
+			sem_wait(g_print);
 			return (0);
+		}
 		usleep(50);
 	}
 }

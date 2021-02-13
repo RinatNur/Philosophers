@@ -49,8 +49,10 @@ static int		check_death_of_phil(t_phil *phil)
 				flag++;
 			i++;
 		}
-		if (flag == PHILS_N)
+		if (flag == PHILS_N) {
+			pthread_mutex_lock(&g_data.print);
 			return (0);
+		}
 		usleep(50);
 	}
 }
